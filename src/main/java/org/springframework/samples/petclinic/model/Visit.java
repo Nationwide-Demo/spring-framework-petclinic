@@ -15,6 +15,9 @@
  */
 package org.springframework.samples.petclinic.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import org.springframework.format.annotation.DateTimeFormat;
 
 import jakarta.persistence.Column;
@@ -105,8 +108,14 @@ public class Visit extends BaseEntity {
      *
      * @return Value of property pet.
      */
+    @JsonIgnore
     public Pet getPet() {
         return this.pet;
+    }
+
+    @JsonProperty("petId")
+    public Integer getPetId() {
+        return this.pet == null ? null : this.pet.getId();
     }
 
     /**

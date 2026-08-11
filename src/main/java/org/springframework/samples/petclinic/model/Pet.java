@@ -15,6 +15,9 @@
  */
 package org.springframework.samples.petclinic.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import org.springframework.format.annotation.DateTimeFormat;
 
 import jakarta.persistence.CascadeType;
@@ -77,8 +80,14 @@ public class Pet extends NamedEntity {
         this.type = type;
     }
 
+    @JsonIgnore
     public Owner getOwner() {
         return this.owner;
+    }
+
+    @JsonProperty("ownerId")
+    public Integer getOwnerId() {
+        return this.owner == null ? null : this.owner.getId();
     }
 
     protected void setOwner(Owner owner) {

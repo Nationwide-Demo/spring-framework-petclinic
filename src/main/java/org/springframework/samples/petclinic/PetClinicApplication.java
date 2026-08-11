@@ -13,25 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.samples.petclinic.web;
+package org.springframework.samples.petclinic;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
- * Controller used to showcase what happens when an exception is thrown
- *
- * @author Michael Isvy
- *         <p/>
- *         Also see how exceptions are turned into JSON by {@link RestExceptionHandler}
+ * Entry point of the PetClinic REST service.
+ * <p>
+ * Component scanning, transaction management, the datasource, the JPA
+ * {@code EntityManagerFactory} and the Spring Data JPA repositories are all provided by
+ * Spring Boot auto-configuration, driven by {@code application.properties}.
  */
-@RestController
-public class CrashController {
+@SpringBootApplication
+public class PetClinicApplication {
 
-    @GetMapping("/api/oups")
-    public String triggerException() {
-        throw new RuntimeException("Expected: controller used to showcase what " +
-            "happens when an exception is thrown");
+    public static void main(String[] args) {
+        SpringApplication.run(PetClinicApplication.class, args);
     }
 
 }

@@ -28,7 +28,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
-import jakarta.xml.bind.annotation.XmlElement;
 
 
 /**
@@ -59,7 +58,6 @@ public class Vet extends Person {
         this.specialties = specialties;
     }
 
-    @XmlElement
     public List<Specialty> getSpecialties() {
         List<Specialty> sortedSpecs = new ArrayList<>(getSpecialtiesInternal());
         sortedSpecs.sort(Comparator.comparing(Specialty::getName, String.CASE_INSENSITIVE_ORDER));
