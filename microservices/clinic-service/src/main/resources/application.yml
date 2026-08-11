@@ -1,0 +1,63 @@
+spring:
+  application:
+    name: clinic-service
+  datasource:
+    url: jdbc:h2:mem:clinic;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password: ""
+    driver-class-name: org.h2.Driver
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:db/h2/schema.sql
+      data-locations: classpath:db/h2/data.sql
+  jpa:
+    hibernate:
+      ddl-auto: none
+    open-in-view: false
+    show-sql: true
+  mvc:
+    view:
+      prefix: /WEB-INF/jsp/
+      suffix: .jsp
+  messages:
+    basename: messages/messages
+
+server:
+  port: 8082
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+
+---
+spring:
+  config:
+    activate:
+      on-profile: mysql
+  datasource:
+    url: jdbc:mysql://localhost:3306/petclinic_clinic?useUnicode=true
+    username: petclinic
+    password: petclinic
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  sql:
+    init:
+      schema-locations: classpath:db/mysql/schema.sql
+      data-locations: classpath:db/mysql/data.sql
+
+---
+spring:
+  config:
+    activate:
+      on-profile: postgresql
+  datasource:
+    url: jdbc:postgresql://localhost:5432/petclinic_clinic
+    username: postgres
+    password: petclinic
+    driver-class-name: org.postgresql.Driver
+  sql:
+    init:
+      schema-locations: classpath:db/postgresql/schema.sql
+      data-locations: classpath:db/postgresql/data.sql

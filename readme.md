@@ -10,6 +10,12 @@ and with a **3-layer architecture** (i.e. presentation --> service --> repositor
 The "canonical" implementation is now based on Spring Boot, Thymeleaf and [aggregate-oriented domain]([https://github.com/spring-projects/spring-petclinic/pull/200). 
 
 
+## Microservices variant
+
+The [`microservices`](microservices/readme.md) directory holds the same application split into two
+independently deployable Spring Boot services (`vets-service` and `clinic-service`) behind an API gateway,
+each with its own database schema.
+
 ## Understanding the Spring Petclinic application with a few diagrams
 
 [See the presentation here](http://fr.slideshare.net/AntoineRey/spring-framework-petclinic-sample-application) (2017 update)

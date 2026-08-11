@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: vets-service
+              uri: ${VETS_SERVICE_URL:http://localhost:8081}
+              predicates:
+                - Path=/vets,/vets.json,/vets.xml
+            - id: clinic-service
+              uri: ${CLINIC_SERVICE_URL:http://localhost:8082}
+              predicates:
+                - Path=/**
+
+server:
+  port: 8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway
