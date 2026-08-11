@@ -1,0 +1,19 @@
+services:
+  vets-service:
+    image: springcommunity/spring-petclinic-vets-service:7.0.3
+    ports:
+      - "8081:8081"
+  clinic-service:
+    image: springcommunity/spring-petclinic-clinic-service:7.0.3
+    ports:
+      - "8082:8082"
+  api-gateway:
+    image: springcommunity/spring-petclinic-api-gateway:7.0.3
+    environment:
+      VETS_SERVICE_URL: http://vets-service:8081
+      CLINIC_SERVICE_URL: http://clinic-service:8082
+    ports:
+      - "8080:8080"
+    depends_on:
+      - vets-service
+      - clinic-service
