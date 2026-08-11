@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.springframework.samples</groupId>
     <artifactId>spring-framework-petclinic</artifactId>
-    <version>5.3.22</version>
+    <version>6.2.8</version>
 
     <name>Spring Framework Petclinic</name>
     <packaging>war</packaging>
@@ -14,16 +14,15 @@
     <properties>
 
         <!-- Generic properties -->
-        <java.version>1.8</java.version>
+        <java.version>21</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <maven.compiler.source>${java.version}</maven.compiler.source>
-        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <maven.compiler.release>${java.version}</maven.compiler.release>
 
         <!-- Spring -->
         <!-- For framework compatibility, refer to the Spring Boot Dependencies BOM -->
         <!-- https://github.com/spring-projects/spring-boot/blob/master/spring-boot-project/spring-boot-dependencies/build.gradle -->
-        <spring-framework.version>5.3.22</spring-framework.version>
+        <spring-framework.version>6.2.8</spring-framework.version>
 
         <!-- Web dependencies -->
         <!-- Version update should also be done in wro.xml, petclinic.less and static resources: htmlHeader.tag and footer.tag-->
@@ -32,52 +31,53 @@
         <webjars-jquery.version>3.5.1</webjars-jquery.version>
         <wro4j.version>1.8.0</wro4j.version> <!-- wro4j 1.0.0 requires Java 9 -->
 
-        <!-- Java EE / Java SE dependencies -->
-        <tomcat.version>9.0.46</tomcat.version>
-        <jaxb-api.version>2.3.1</jaxb-api.version>
-        <jaxb-runtime.version>2.3.4</jaxb-runtime.version>
-        <javax-activation.version>1.2.0</javax-activation.version>
-        <servlet-api.version>4.0.4</servlet-api.version>
-        <taglibs-standard.version>1.2.5</taglibs-standard.version>
+        <!-- Jakarta EE / Java SE dependencies -->
+        <tomcat.version>10.1.34</tomcat.version>
+        <jaxb-api.version>4.0.2</jaxb-api.version>
+        <jaxb-runtime.version>4.0.5</jaxb-runtime.version>
+        <jakarta-activation.version>2.1.3</jakarta-activation.version>
+        <jstl-api.version>3.0.0</jstl-api.version>
+        <jstl-glassfish.version>3.0.1</jstl-glassfish.version>
 
         <!-- Persistence -->
-        <spring-data.version>2021.1.0-RC1</spring-data.version>
-        <hibernate.version>5.6.11.Final</hibernate.version>
-        <hibernate-validator.version>6.2.0.Final</hibernate-validator.version>
-        <hsqldb.version>2.5.2</hsqldb.version>
-        <h2database.version>2.1.214</h2database.version>
+        <spring-data.version>2024.1.5</spring-data.version>
+        <hibernate.version>6.6.11.Final</hibernate.version>
+        <hibernate-validator.version>8.0.2.Final</hibernate-validator.version>
+        <caffeine.version>3.1.8</caffeine.version>
+        <hsqldb.version>2.7.4</hsqldb.version>
+        <h2database.version>2.3.232</h2database.version>
 
         <!-- Logging -->
-        <slf4j.version>1.7.32</slf4j.version>
-        <logback.version>1.2.6</logback.version>
+        <slf4j.version>2.0.16</slf4j.version>
+        <logback.version>1.5.16</logback.version>
 
         <!-- Test -->
-        <assertj.version>3.21.0</assertj.version>
-        <json-path.version>2.6.0</json-path.version>
-        <mockito.version>4.0.0</mockito.version>
-        <hamcrest.version>2.2</hamcrest.version>
-        <junit-jupiter.version>5.8.1</junit-jupiter.version>
+        <assertj.version>3.26.3</assertj.version>
+        <json-path.version>2.9.0</json-path.version>
+        <mockito.version>5.14.2</mockito.version>
+        <hamcrest.version>3.0</hamcrest.version>
+        <junit-jupiter.version>5.11.4</junit-jupiter.version>
 
         <!-- JDBC Drivers -->
-        <mysql-driver.version>8.0.28</mysql-driver.version>
-        <postgresql-driver.version>42.5.0</postgresql-driver.version>
+        <mysql-driver.version>8.0.33</mysql-driver.version>
+        <postgresql-driver.version>42.7.5</postgresql-driver.version>
 
         <!-- Others -->
-        <jackson.version>2.12.4</jackson.version>
-        <aspectj.version>1.9.7</aspectj.version>
+        <jackson.version>2.18.2</jackson.version>
+        <aspectj.version>1.9.22.1</aspectj.version>
 
         <!-- Maven plugins -->
-        <jetty-maven-plugin.version>9.4.43.v20210629</jetty-maven-plugin.version>
-        <maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
-        <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+        <jetty-maven-plugin.version>11.0.24</jetty-maven-plugin.version>
+        <maven-assembly-plugin.version>3.7.1</maven-assembly-plugin.version>
+        <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
         <maven-eclipse-plugin.version>2.10</maven-eclipse-plugin.version>
-        <maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
-        <maven-surefire-plugin.version>2.22.1</maven-surefire-plugin.version>
-        <maven-war-plugin.version>3.3.1</maven-war-plugin.version>
-        <jacoco-maven-plugin>0.8.6</jacoco-maven-plugin>
+        <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
+        <maven-surefire-plugin.version>3.5.2</maven-surefire-plugin.version>
+        <maven-war-plugin.version>3.4.0</maven-war-plugin.version>
+        <jacoco-maven-plugin>0.8.12</jacoco-maven-plugin>
 
         <!-- Docker image -->
-        <docker.jib-maven-plugin.version>2.6.0</docker.jib-maven-plugin.version>
+        <docker.jib-maven-plugin.version>3.4.4</docker.jib-maven-plugin.version>
         <docker.image.prefix>springcommunity</docker.image.prefix>
 
     </properties>
@@ -116,9 +116,15 @@
         </dependency>
 
         <dependency>
-            <groupId>org.apache.taglibs</groupId>
-            <artifactId>taglibs-standard-jstlel</artifactId>
-            <version>${taglibs-standard.version}</version>
+            <groupId>jakarta.servlet.jsp.jstl</groupId>
+            <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
+            <version>${jstl-api.version}</version>
+        </dependency>
+        <!-- JSTL implementation, required by Tomcat 10 -->
+        <dependency>
+            <groupId>org.glassfish.web</groupId>
+            <artifactId>jakarta.servlet.jsp.jstl</artifactId>
+            <version>${jstl-glassfish.version}</version>
         </dependency>
         <!--  JSon -->
         <dependency>
@@ -151,11 +157,16 @@
             <artifactId>spring-webmvc</artifactId>
             <version>${spring-framework.version}</version>
         </dependency>
-        <!-- used for EhCacheCacheManager -->
+        <!-- used for CaffeineCacheManager -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context-support</artifactId>
             <version>${spring-framework.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+            <version>${caffeine.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -201,19 +212,14 @@
 
         <!-- HIBERNATE -->
         <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-entitymanager</artifactId>
+            <groupId>org.hibernate.orm</groupId>
+            <artifactId>hibernate-core</artifactId>
             <version>${hibernate.version}</version>
         </dependency>
         <dependency>
             <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator</artifactId>
             <version>${hibernate-validator.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-ehcache</artifactId>
-            <version>${hibernate.version}</version>
         </dependency>
 
 
@@ -274,8 +280,8 @@
              The JAXB API is considered to be Java EE API and therefore is
              no longer contained on the default class path in Java SE 9 -->
         <dependency>
-            <groupId>javax.xml.bind</groupId>
-            <artifactId>jaxb-api</artifactId>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
             <version>${jaxb-api.version}</version>
         </dependency>
         <dependency>
@@ -284,9 +290,9 @@
             <version>${jaxb-runtime.version}</version>
         </dependency>
         <dependency>
-            <groupId>javax.activation</groupId>
-            <artifactId>javax.activation-api</artifactId>
-            <version>${javax-activation.version}</version>
+            <groupId>jakarta.activation</groupId>
+            <artifactId>jakarta.activation-api</artifactId>
+            <version>${jakarta-activation.version}</version>
         </dependency>
 
     </dependencies>
@@ -315,6 +321,10 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven-compiler-plugin.version}</version>
+                <configuration>
+                    <!-- Spring Framework 6.1+ resolves parameter names from -parameters only -->
+                    <parameters>true</parameters>
+                </configuration>
             </plugin>
 
             <plugin>
