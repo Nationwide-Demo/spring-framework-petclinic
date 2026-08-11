@@ -1,0 +1,74 @@
+# Local development stack. Build the service images first:
+#   ./mvnw -DskipTests package jib:dockerBuild
+#
+# In AWS the equivalents are: postgres -> Aurora Serverless v2, the four services -> ECS
+# Fargate services behind an ALB, and the frontend -> the SPA bundle on S3/CloudFront.
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: petclinic
+      POSTGRES_PASSWORD: petclinic
+      POSTGRES_DB: petclinic
+    volumes:
+      - ./infra/local/init-databases.sql:/docker-entrypoint-initdb.d/init-databases.sql:ro
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U petclinic"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  customers-service:
+    image: petclinic/petclinic-customers-service:1.0.0-SNAPSHOT
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/customers
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8081:8081"
+
+  vets-service:
+    image: petclinic/petclinic-vets-service:1.0.0-SNAPSHOT
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/vets
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8082:8082"
+
+  visits-service:
+    image: petclinic/petclinic-visits-service:1.0.0-SNAPSHOT
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/visits
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8083:8083"
+
+  api-gateway:
+    image: petclinic/petclinic-api-gateway:1.0.0-SNAPSHOT
+    environment:
+      CUSTOMERS_SERVICE_URL: http://customers-service:8081
+      VETS_SERVICE_URL: http://vets-service:8082
+      VISITS_SERVICE_URL: http://visits-service:8083
+      ALLOWED_ORIGINS: http://localhost:8000
+    depends_on:
+      - customers-service
+      - vets-service
+      - visits-service
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build: ./frontend
+    environment:
+      GATEWAY_URL: http://api-gateway:8080
+    depends_on:
+      - api-gateway
+    ports:
+      - "8000:80"

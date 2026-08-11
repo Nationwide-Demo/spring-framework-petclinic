@@ -1,16 +1,22 @@
 {
-  "name": "Spring Framework Petclinic",
+  "name": "PetClinic Microservices",
   "image": "mcr.microsoft.com/devcontainers/universal:2",
   "features": {
     "ghcr.io/devcontainers/features/java:1": {
-        "version": "17",
-        "installMaven": "true",
-        "mavenVersion": "3.8.6"
-    }
+      "version": "17",
+      "installMaven": "true",
+      "mavenVersion": "3.9.9"
+    },
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "20"
+    },
+    "ghcr.io/devcontainers/features/terraform:1": {},
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
   },
   "extensions": [
     "vscjava.vscode-java-pack",
-    "redhat.vscode-xml",
-    "vmware.vscode-boot-dev-pack"
+    "vmware.vscode-boot-dev-pack",
+    "hashicorp.terraform",
+    "dbaeumer.vscode-eslint"
   ]
 }
