@@ -1,0 +1,11 @@
+region      = "us-east-1"
+environment = "dev"
+
+api_domain_name      = "petclinic-api.example.com"
+frontend_domain_name = "petclinic.example.com"
+
+# Certificate for the CloudFront alias, which must live in us-east-1
+frontend_certificate_arn = "arn:aws:acm:us-east-1:123456789012:certificate/00000000-0000-0000-0000-000000000000"
+
+image_tag     = "1.0.0"
+desired_count = 2
