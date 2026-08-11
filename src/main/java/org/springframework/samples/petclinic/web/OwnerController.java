@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2022 the original author or authors.
+ * Copyright 2002-2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,118 +15,75 @@
  */
 package org.springframework.samples.petclinic.web;
 
+import java.net.URI;
 import java.util.Collection;
-import java.util.Map;
 
 import jakarta.validation.Valid;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.samples.petclinic.model.Owner;
 import org.springframework.samples.petclinic.service.ClinicService;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
+ * REST endpoints for {@link Owner} resources.
+ *
  * @author Juergen Hoeller
  * @author Ken Krebs
  * @author Arjen Poutsma
  * @author Michael Isvy
  */
-@Controller
+@RestController
+@RequestMapping("/api/owners")
 public class OwnerController {
 
-    private static final String VIEWS_OWNER_CREATE_OR_UPDATE_FORM = "owners/createOrUpdateOwnerForm";
     private final ClinicService clinicService;
 
     public OwnerController(ClinicService clinicService) {
         this.clinicService = clinicService;
     }
 
-    @InitBinder
-    public void setAllowedFields(WebDataBinder dataBinder) {
-        dataBinder.setDisallowedFields("id");
+    /**
+     * @param lastName an empty last name signifies the broadest possible search
+     */
+    @GetMapping
+    public ResponseEntity<Collection<Owner>> listOwners(@RequestParam(defaultValue = "") String lastName) {
+        return ResponseEntity.ok(this.clinicService.findOwnerByLastName(lastName));
     }
 
-    @GetMapping(value = "/owners/new")
-    public String initCreationForm(Map<String, Object> model) {
-        Owner owner = new Owner();
-        model.put("owner", owner);
-        return VIEWS_OWNER_CREATE_OR_UPDATE_FORM;
-    }
-
-    @PostMapping(value = "/owners/new")
-    public String processCreationForm(@Valid Owner owner, BindingResult result) {
-        if (result.hasErrors()) {
-            return VIEWS_OWNER_CREATE_OR_UPDATE_FORM;
-        }
-
-        this.clinicService.saveOwner(owner);
-        return "redirect:/owners/" + owner.getId();
-    }
-
-    @GetMapping(value = "/owners/find")
-    public String initFindForm(Map<String, Object> model) {
-        model.put("owner", new Owner());
-        return "owners/findOwners";
-    }
-
-    @GetMapping(value = "/owners")
-    public String processFindForm(Owner owner, BindingResult result, Map<String, Object> model) {
-
-        // allow parameterless GET request for /owners to return all records
-        if (owner.getLastName() == null) {
-            owner.setLastName(""); // empty string signifies broadest possible search
-        }
-
-        // find owners by last name
-        Collection<Owner> results = this.clinicService.findOwnerByLastName(owner.getLastName());
-        if (results.isEmpty()) {
-            // no owners found
-            result.rejectValue("lastName", "notFound", "not found");
-            return "owners/findOwners";
-        } else if (results.size() == 1) {
-            // 1 owner found
-            owner = results.iterator().next();
-            return "redirect:/owners/" + owner.getId();
-        } else {
-            // multiple owners found
-            model.put("selections", results);
-            return "owners/ownersList";
-        }
-    }
-
-    @GetMapping(value = "/owners/{ownerId}/edit")
-    public String initUpdateOwnerForm(@PathVariable("ownerId") int ownerId, Model model) {
+    @GetMapping("/{ownerId}")
+    public ResponseEntity<Owner> getOwner(@PathVariable int ownerId) {
         Owner owner = this.clinicService.findOwnerById(ownerId);
-        model.addAttribute(owner);
-        return VIEWS_OWNER_CREATE_OR_UPDATE_FORM;
+        if (owner == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(owner);
     }
 
-    @PostMapping(value = "/owners/{ownerId}/edit")
-    public String processUpdateOwnerForm(@Valid Owner owner, BindingResult result, @PathVariable("ownerId") int ownerId) {
-        if (result.hasErrors()) {
-            return VIEWS_OWNER_CREATE_OR_UPDATE_FORM;
+    @PostMapping
+    public ResponseEntity<Owner> createOwner(@Valid @RequestBody Owner owner) {
+        // the identifier is assigned by the data store, never by the client
+        owner.setId(null);
+        this.clinicService.saveOwner(owner);
+        return ResponseEntity.created(URI.create("/api/owners/" + owner.getId())).body(owner);
+    }
+
+    @PutMapping("/{ownerId}")
+    public ResponseEntity<Owner> updateOwner(@PathVariable int ownerId, @Valid @RequestBody Owner owner) {
+        if (this.clinicService.findOwnerById(ownerId) == null) {
+            return ResponseEntity.notFound().build();
         }
 
         owner.setId(ownerId);
         this.clinicService.saveOwner(owner);
-        return "redirect:/owners/{ownerId}";
-    }
-
-    /**
-     * Custom handler for displaying an owner.
-     *
-     * @param ownerId the ID of the owner to display
-     * @return a ModelMap with the model attributes for the view
-     */
-    @GetMapping("/owners/{ownerId}")
-    public ModelAndView showOwner(@PathVariable("ownerId") int ownerId) {
-        ModelAndView mav = new ModelAndView("owners/ownerDetails");
-        mav.addObject(this.clinicService.findOwnerById(ownerId));
-        return mav;
+        return ResponseEntity.ok(owner);
     }
 
 }

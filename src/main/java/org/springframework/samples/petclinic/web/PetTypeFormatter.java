@@ -24,6 +24,7 @@ import org.jspecify.annotations.NullMarked;
 import org.springframework.format.Formatter;
 import org.springframework.samples.petclinic.model.PetType;
 import org.springframework.samples.petclinic.service.ClinicService;
+import org.springframework.stereotype.Component;
 
 /**
  * Instructs Spring MVC on how to parse and print elements of type 'PetType'. Starting from Spring 3.0, Formatters have
@@ -31,13 +32,14 @@ import org.springframework.samples.petclinic.service.ClinicService;
  * Spring ref doc: http://static.springsource.org/spring/docs/current/spring-framework-reference/html/validation.html#format-Formatter-SPI
  * - A nice blog entry from Gordon Dickens: http://gordondickens.com/wordpress/2010/09/30/using-spring-3-0-custom-type-converter/
  * <p/>
- * Also see how the bean 'conversionService' has been declared inside /WEB-INF/mvc-core-config.xml
+ * Spring Boot registers every {@link Formatter} bean in the MVC conversion service.
  *
  * @author Mark Fisher
  * @author Juergen Hoeller
  * @author Michael Isvy
  */
 @NullMarked
+@Component
 public class PetTypeFormatter implements Formatter<PetType> {
 
     private final ClinicService clinicService;

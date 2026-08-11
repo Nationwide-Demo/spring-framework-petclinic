@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2022 the original author or authors.
+ * Copyright 2002-2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,50 +15,44 @@
  */
 package org.springframework.samples.petclinic.web;
 
+import java.net.URI;
+import java.util.Collection;
+import java.util.Objects;
+
+import jakarta.validation.Valid;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.samples.petclinic.model.Owner;
 import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.model.PetType;
 import org.springframework.samples.petclinic.service.ClinicService;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.*;
-
-import jakarta.validation.Valid;
-
-import java.util.Collection;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
+ * REST endpoints for {@link Pet} resources and their {@link PetType}s.
+ *
  * @author Juergen Hoeller
  * @author Ken Krebs
  * @author Arjen Poutsma
  */
-@Controller
-@RequestMapping("/owners/{ownerId}")
+@RestController
+@RequestMapping("/api")
 public class PetController {
 
-    private static final String VIEWS_PETS_CREATE_OR_UPDATE_FORM = "pets/createOrUpdatePetForm";
     private final ClinicService clinicService;
 
     public PetController(ClinicService clinicService) {
         this.clinicService = clinicService;
-    }
-
-    @ModelAttribute("types")
-    public Collection<PetType> populatePetTypes() {
-        return this.clinicService.findPetTypes();
-    }
-
-    @ModelAttribute("owner")
-    public Owner findOwner(@PathVariable("ownerId") int ownerId) {
-        return this.clinicService.findOwnerById(ownerId);
-    }
-
-    @InitBinder("owner")
-    public void initOwnerBinder(WebDataBinder dataBinder) {
-        dataBinder.setDisallowedFields("id");
     }
 
     @InitBinder("pet")
@@ -66,46 +60,91 @@ public class PetController {
         dataBinder.setValidator(new PetValidator());
     }
 
-    @GetMapping(value = "/pets/new")
-    public String initCreationForm(Owner owner, ModelMap model) {
-        Pet pet = new Pet();
-        owner.addPet(pet);
-        model.put("pet", pet);
-        return VIEWS_PETS_CREATE_OR_UPDATE_FORM;
+    @GetMapping("/pettypes")
+    public ResponseEntity<Collection<PetType>> listPetTypes() {
+        return ResponseEntity.ok(this.clinicService.findPetTypes());
     }
 
-    @PostMapping(value = "/pets/new")
-    public String processCreationForm(Owner owner, @Valid Pet pet, BindingResult result, ModelMap model) {
-        if (StringUtils.hasLength(pet.getName()) && pet.isNew() && owner.getPet(pet.getName(), true) != null){
+    @GetMapping("/owners/{ownerId}/pets")
+    public ResponseEntity<Collection<Pet>> listPets(@PathVariable int ownerId) {
+        Owner owner = this.clinicService.findOwnerById(ownerId);
+        if (owner == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(owner.getPets());
+    }
+
+    @GetMapping("/pets/{petId}")
+    public ResponseEntity<Pet> getPet(@PathVariable int petId) {
+        Pet pet = this.clinicService.findPetById(petId);
+        if (pet == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(pet);
+    }
+
+    @PostMapping("/owners/{ownerId}/pets")
+    public ResponseEntity<Object> createPet(@PathVariable int ownerId, @Valid @RequestBody Pet pet,
+                                            BindingResult result) {
+        Owner owner = this.clinicService.findOwnerById(ownerId);
+        if (owner == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        pet.setId(null);
+        resolvePetType(pet, result);
+        if (StringUtils.hasLength(pet.getName()) && owner.getPet(pet.getName(), true) != null) {
             result.rejectValue("name", "duplicate", "already exists");
         }
         if (result.hasErrors()) {
-            model.put("pet", pet);
-            return VIEWS_PETS_CREATE_OR_UPDATE_FORM;
+            return ResponseEntity.badRequest().body(ValidationErrorResponse.from(result));
         }
 
         owner.addPet(pet);
         this.clinicService.savePet(pet);
-        return "redirect:/owners/{ownerId}";
+        return ResponseEntity.created(URI.create("/api/pets/" + pet.getId())).body(pet);
     }
 
-    @GetMapping(value = "/pets/{petId}/edit")
-    public String initUpdateForm(@PathVariable("petId") int petId, ModelMap model) {
-        Pet pet = this.clinicService.findPetById(petId);
-        model.put("pet", pet);
-        return VIEWS_PETS_CREATE_OR_UPDATE_FORM;
-    }
+    @PutMapping("/pets/{petId}")
+    public ResponseEntity<Object> updatePet(@PathVariable int petId, @Valid @RequestBody Pet pet,
+                                            BindingResult result) {
+        Pet existing = this.clinicService.findPetById(petId);
+        if (existing == null) {
+            return ResponseEntity.notFound().build();
+        }
 
-    @PostMapping(value = "/pets/{petId}/edit")
-    public String processUpdateForm(@Valid Pet pet, BindingResult result, Owner owner, ModelMap model) {
+        resolvePetType(pet, result);
         if (result.hasErrors()) {
-            model.put("pet", pet);
-            return VIEWS_PETS_CREATE_OR_UPDATE_FORM;
+            return ResponseEntity.badRequest().body(ValidationErrorResponse.from(result));
         }
 
-        owner.addPet(pet);
+        pet.setId(petId);
+        Owner owner = existing.getOwner();
+        if (owner != null) {
+            owner.addPet(pet);
+        }
         this.clinicService.savePet(pet);
-        return "redirect:/owners/{ownerId}";
+        return ResponseEntity.ok(pet);
+    }
+
+    /**
+     * The pet type may be submitted either by id or by name: replace it with the
+     * persistent instance so the request cannot reference an unknown type.
+     */
+    private void resolvePetType(Pet pet, BindingResult result) {
+        PetType submitted = pet.getType();
+        if (submitted == null) {
+            return;
+        }
+
+        for (PetType type : this.clinicService.findPetTypes()) {
+            if (Objects.equals(type.getId(), submitted.getId())
+                || Objects.equals(type.getName(), submitted.getName())) {
+                pet.setType(type);
+                return;
+            }
+        }
+        result.rejectValue("type", "notFound", "not found");
     }
 
 }
