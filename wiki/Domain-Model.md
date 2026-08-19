@@ -60,6 +60,7 @@ specialties(id, name)
 vet_specialties(vet_id → vets, specialty_id → specialties)
 ```
 
-Seed data: 6 vets, 3 specialties, pet types `cat`/`dog`/`lizard`, 10 owners with
-pets and a few visits. `EntityUtils.getById(...)` is a small helper used mostly by
-tests and JDBC mapping code to look up an entity in a collection by id.
+Seed data (`db/<vendor>/data.sql`): 6 vets, 3 specialties (`radiology`, `surgery`,
+`dentistry`), 6 pet types (`cat`, `dog`, `lizard`, `snake`, `bird`, `hamster`),
+10 owners, 13 pets and 4 visits. `EntityUtils.getById(...)` is a small helper used
+mostly by tests and JDBC mapping code to look up an entity in a collection by id.
