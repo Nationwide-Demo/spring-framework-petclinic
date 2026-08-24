@@ -31,11 +31,11 @@ needed. For persistent databases:
 ```bash
 docker run -e MYSQL_USER=petclinic -e MYSQL_PASSWORD=petclinic \
            -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=petclinic \
-           -p 3306:3306 -d mysql:8.0
+           -p 3306:3306 -d mysql:5.7.8
 mvn jetty:run-war -P MySQL
 
 docker run --name postgres-petclinic -e POSTGRES_PASSWORD=petclinic \
-           -e POSTGRES_DB=petclinic -p 5432:5432 -d postgres
+           -e POSTGRES_DB=petclinic -p 5432:5432 -d postgres:9.6.0
 mvn jetty:run-war -P PostgreSQL
 ```
 
