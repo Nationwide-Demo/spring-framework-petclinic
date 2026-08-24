@@ -11,6 +11,9 @@ Both need `GITHUB_TOKEN`; the main-branch workflow additionally needs `SONAR_TOK
 Quality gate and coverage badges in `readme.md` point at SonarCloud
 (`sonar.host.url = https://sonarcloud.io`, organization `spring-petclinic`);
 coverage comes from the JaCoCo XML report produced during `prepare-package`.
+The Java CI badge in `readme.md` currently points to a
+`maven-build.yml` workflow name, while the workflows in this repository are
+`maven-build-main.yml` and `maven-build-pull-request.yml`.
 
 ## Dependency updates
 

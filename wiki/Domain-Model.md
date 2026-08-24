@@ -26,7 +26,7 @@ so the vet list can be marshalled to JSON/XML as a single root object.
 |--------|--------|--------------|------------|
 | `Owner` | `address`, `city`, `telephone` | `@OneToMany(cascade = ALL, mappedBy = "owner") Set<Pet>` | `@NotEmpty` on address/city/telephone, `@Digits(fraction = 0, integer = 10)` on telephone |
 | `Pet` | `birthDate` (`LocalDate`, `@DateTimeFormat("yyyy/MM/dd")`) | `@ManyToOne PetType type`, `@ManyToOne Owner owner`, `@OneToMany(cascade = ALL, fetch = EAGER) Set<Visit> visits` | enforced by `web/PetValidator` (name, type, birth date required) |
-| `Visit` | `date`, `description` | `@ManyToOne Pet pet` | `@NotEmpty` description |
+| `Visit` | `date` (stored as `visit_date`), `description` | `@ManyToOne Pet pet` | `@NotEmpty` description |
 | `Vet` | inherited names | `@ManyToMany(fetch = EAGER)` to `Specialty` via join table `vet_specialties` | — |
 | `PetType`, `Specialty` | `name` only | — | — |
 

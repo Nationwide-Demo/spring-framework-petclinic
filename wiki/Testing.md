@@ -1,6 +1,6 @@
 # Testing
 
-Tests use JUnit 5 (Jupiter 6.x), the Spring TestContext framework, Mockito, AssertJ
+Tests use JUnit Jupiter **6.1.2**, the Spring TestContext framework, Mockito, AssertJ
 and Hamcrest. Surefire only picks up classes named `*Tests`.
 
 ## Layout
@@ -23,9 +23,11 @@ exist: the same assertions must hold for all three persistence implementations.
 
 `src/test/resources/spring/mvc-test-config.xml` replaces `ClinicService` with a
 Mockito mock (created through `Mockito.mock` as a factory method and wrapped in a
-`ProxyFactoryBean`), so controller tests exercise the real Spring MVC
-infrastructure — real formatters, validators, view resolution — with a stubbed
-service layer.
+`ProxyFactoryBean`). The controller tests then build `MockMvc` with
+`standaloneSetup`; the Pet tests explicitly provide the configured conversion
+service and the Crash test provides the exception resolver. Thus they exercise
+controller binding, formatters, validators, and selected MVC infrastructure
+without starting a full DispatcherServlet or rendering JSP files.
 
 Test resources are configured so Spring config files can sit next to their test
 class (`src/test/java` is declared as a `testResource` directory).

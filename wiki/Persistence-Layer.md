@@ -25,7 +25,8 @@ em.createQuery("SELECT distinct vet FROM Vet vet left join fetch vet.specialties
              + "ORDER BY vet.lastName, vet.firstName");
 ```
 
-`save(...)` uses `isNew()` to choose `persist` vs `merge`. The
+`save(...)` checks whether `getId() == null` (the same new-entity convention
+represented by `BaseEntity.isNew()`) to choose `persist` vs `merge`. The
 `LocalContainerEntityManagerFactoryBean` (persistence unit `petclinic`,
 `packagesToScan = org.springframework.samples.petclinic`) plus
 `JpaTransactionManager` are declared for the `jpa` and `spring-data-jpa` profiles;
@@ -66,6 +67,8 @@ Supporting types:
   is loaded.
 * `JdbcVetRepositoryImpl.findAll()` loads vets, then all specialties, then the
   `vet_specialties` rows per vet.
+* Owner and pet saves insert new rows or update existing rows; visit saves only
+  insert new visits and throw `UnsupportedOperationException` for updates.
 
 Transactions in this profile are managed by `DataSourceTransactionManager`.
 

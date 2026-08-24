@@ -54,6 +54,25 @@ It also sets `jdbc.initLocation` / `jdbc.dataLocation` to
 `classpath:db/${db.script}/{schema,data}.sql` and `jpa.showSql=true` (SQL is echoed
 on startup by design in this sample).
 
+## Database scripts
+
+The four Maven database profiles select the matching directory under
+`src/main/resources/db`:
+
+| Directory | Schema and seed-data behavior |
+|-----------|-------------------------------|
+| `h2` | H2 identity columns; the schema drops existing tables and recreates them, then inserts the seed rows |
+| `hsqldb` | HSQLDB identity columns; like H2, the schema drops existing tables and recreates them before inserting the seed rows |
+| `mysql` | Creates the `petclinic` database, uses InnoDB tables and `utf8`/`utf8_general_ci`, and uses `INSERT IGNORE` seed statements |
+| `postgresql` | Uses `SERIAL` keys, `IF NOT EXISTS` tables/indexes, resets sequences to start at 100, and uses `ON CONFLICT DO NOTHING` seed statements |
+
+All four schemas contain `vets`, `specialties`, `vet_specialties`, `types`,
+`owners`, `pets`, and `visits`, with foreign keys matching the entity
+relationships. The seed data has six vets, three specialties, six pet types,
+ten owners, thirteen pets, and four visits. The H2/HSQLDB dates are the newer
+sample dates from the in-memory dataset; MySQL/PostgreSQL contain the legacy
+dates from their vendor-specific scripts.
+
 ## Other configuration files
 
 | File | Purpose |

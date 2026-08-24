@@ -12,7 +12,7 @@
 
 ```bash
 mvn -B verify           # full build → target/petclinic.war (finalName = petclinic)
-mvn -B test             # unit + integration tests (surefire includes **/*Tests.java)
+mvn -B test             # unit + Spring integration tests (surefire includes **/*Tests.java)
 mvn jetty:run-war       # run locally at http://localhost:8080
 mvn generate-resources -P css   # regenerate petclinic.css from SCSS
 mvn jib:build           # publish the Docker image (needs registry credentials)
@@ -31,11 +31,11 @@ needed. For persistent databases:
 ```bash
 docker run -e MYSQL_USER=petclinic -e MYSQL_PASSWORD=petclinic \
            -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=petclinic \
-           -p 3306:3306 mysql:5.7.8
+           -p 3306:3306 -d mysql:8.0
 mvn jetty:run-war -P MySQL
 
 docker run --name postgres-petclinic -e POSTGRES_PASSWORD=petclinic \
-           -e POSTGRES_DB=petclinic -p 5432:5432 -d postgres:9.6.0
+           -e POSTGRES_DB=petclinic -p 5432:5432 -d postgres
 mvn jetty:run-war -P PostgreSQL
 ```
 
@@ -47,6 +47,10 @@ Switch the persistence implementation independently of the vendor:
 ```bash
 mvn jetty:run-war -Dspring.profiles.active=jdbc            # or spring-data-jpa
 ```
+
+The Maven database profile and the Spring persistence profile are independent:
+for example, `-P PostgreSQL -Dspring.profiles.active=jdbc` uses PostgreSQL with
+the JDBC repositories.
 
 ## Build plugins worth knowing
 

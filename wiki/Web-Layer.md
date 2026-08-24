@@ -34,6 +34,15 @@ composed with JSP tag files under `WEB-INF/tags`.
 `@ModelAttribute("visit")` to pre-load the pet and attach a new `Visit` before the
 handler runs.
 
+Every JSP view referenced by the controllers and MVC configuration exists under
+`src/main/webapp/WEB-INF/jsp`: `welcome.jsp`, `exception.jsp`,
+`owners/createOrUpdateOwnerForm.jsp`, `owners/findOwners.jsp`,
+`owners/ownersList.jsp`, `owners/ownerDetails.jsp`,
+`pets/createOrUpdatePetForm.jsp`, `pets/createOrUpdateVisitForm.jsp`, and
+`vets/vetList.jsp`. The exception is the `VisitController.showVisits` return
+value `visitList`: no corresponding `WEB-INF/jsp/visitList.jsp` exists, so that
+GET endpoint is a known code/view discrepancy and does not render successfully.
+
 ## Binding, formatting, validation
 
 * `@InitBinder` in `OwnerController`, `PetController` (for `owner`) and

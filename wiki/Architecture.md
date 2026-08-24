@@ -60,9 +60,11 @@ profile declared in `PetclinicInitializer.SPRING_PROFILE`.
   `DataSourceTransactionManager`).
 * **Caching** — `@Cacheable("vets")` on `ClinicServiceImpl.findVets()`, backed by
   `CaffeineCacheManager`.
-* **Monitoring** — `util/CallMonitoringAspect` wraps every `@Repository` bean
+* **Monitoring** — `util/CallMonitoringAspect` wraps `@Repository` beans
   (`@Around("within(@org.springframework.stereotype.Repository *)")`) and exposes
   call count / average call time over JMX as `petclinic:type=CallMonitor`.
+  Spring Data JPA's generated repository proxies are not annotated repository
+  classes, so this monitor does not cover that implementation.
 * **Exception handling** — `CrashController` (`GET /oups`) intentionally throws;
   `SimpleMappingExceptionResolver` renders `WEB-INF/jsp/exception.jsp`.
 * **i18n** — `messages/messages*.properties` (default, `en`, `de`, `es`) via
